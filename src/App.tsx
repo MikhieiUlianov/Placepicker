@@ -6,7 +6,8 @@ import DeleteConfirmation from "./components/DeleteConfirmation";
 import logoImg from "./assets/logo.png";
 import AvailablePlaces from "./components/AvailablePlaces";
 
-// Define types
+import { updateUserPlaces } from "./http.js";
+
 type PlaceImage = {
   src: string;
   alt: string;
@@ -35,13 +36,19 @@ function App() {
     setModalIsOpen(false);
   }
 
-  function handleSelectPlace(selectedPlace: Place) {
+  async function handleSelectPlace(selectedPlace: Place) {
     setUserPlaces((prevPickedPlaces) => {
+      if (!prevPickedPlaces) {
+        prevPickedPlaces = [];
+      }
       if (!prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
         return [selectedPlace, ...prevPickedPlaces];
       }
       return prevPickedPlaces;
     });
+    try {
+      await updateUserPlaces([selectedPlace, ...userPlaces]);
+    } catch (error) {}
   }
 
   const handleRemovePlace = useCallback(async function handleRemovePlace() {

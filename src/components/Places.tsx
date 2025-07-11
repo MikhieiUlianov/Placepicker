@@ -5,8 +5,8 @@ type PlacesProps = {
   places: Place[];
   fallbackText: string;
   onSelectPlace: (place: Place) => void;
-  isLoading: boolean;
-  loadingText: string;
+  isLoading?: boolean;
+  loadingText?: string;
 };
 
 export default function Places({

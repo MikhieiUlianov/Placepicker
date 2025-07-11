@@ -3,7 +3,7 @@ import { Place } from "../App.js";
 import Places from "./Places.js";
 import ErrorMessage from "./ErrorMessage.js";
 import { sortPlacesByDistance } from "../loc.js";
-import { fetchAvailiblePlaces } from "../http.js";
+import { fetchAvailablePlaces } from "../http.js";
 
 export default function AvailablePlaces({
   onSelectPlace,
@@ -18,7 +18,7 @@ export default function AvailablePlaces({
     async function fetchPlaces() {
       setIsFetching(true);
       try {
-        const places = await fetchAvailiblePlaces();
+        const places = await fetchAvailablePlaces();
 
         navigator.geolocation.getCurrentPosition((position) => {
           const sortedPlaces = sortPlacesByDistance(
