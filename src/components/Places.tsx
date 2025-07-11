@@ -1,4 +1,18 @@
-export default function Places({ title, places, fallbackText, onSelectPlace }) {
+import { Place } from "../App";
+
+type PlacesProps = {
+  title: string;
+  places: Place[];
+  fallbackText: string;
+  onSelectPlace: (place: Place) => void;
+};
+
+export default function Places({
+  title,
+  places,
+  fallbackText,
+  onSelectPlace,
+}: PlacesProps) {
   console.log(places);
   return (
     <section className="places-category">
@@ -9,7 +23,10 @@ export default function Places({ title, places, fallbackText, onSelectPlace }) {
           {places.map((place) => (
             <li key={place.id} className="place-item">
               <button onClick={() => onSelectPlace(place)}>
-                <img src={`http://localhost:3000/${place.image.src}`} alt={place.image.alt} />
+                <img
+                  src={`http://localhost:3000/${place.image.src}`}
+                  alt={place.image.alt}
+                />
                 <h3>{place.title}</h3>
               </button>
             </li>
