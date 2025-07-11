@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Place } from "../App.js";
 import Places from "./Places.js";
+import ErrorMessage from "./ErrorMessage.js";
+import { sortPlacesByDistance } from "../loc.js";
+import { fetchAvailiblePlaces } from "../http.js";
 
 export default function AvailablePlaces({
   onSelectPlace,
@@ -9,20 +12,49 @@ export default function AvailablePlaces({
 }) {
   const [isFetching, setIsFetching] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState<Place[]>([]);
+  const [error, setError] = useState<{ message: string } | null>(null);
 
   useEffect(() => {
     async function fetchPlaces() {
       setIsFetching(true);
-      const response = await fetch("http://localhost:3000/places");
-      const resData = await response.json();
-      setAvailablePlaces(resData.places);
-      setIsFetching(false);
+      try {
+        const places = await fetchAvailiblePlaces();
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(
+            places,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+
+          setAvailablePlaces(sortedPlaces);
+          setIsFetching(false);
+        });
+      } catch (error) {
+        setError({
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
+        });
+
+        setIsFetching(false);
+        // We use try/catch to safely handle unexpected errors during fetch.
+        // TypeScript treats the `error` in `catch` as `unknown`, so we must narrow it.
+        // If the error is an instance of Error, we can safely access `.message` (which is a string).
+        // Otherwise, we manually set a fallback message string to avoid runtime issues.
+      }
     }
-    /*     fetch("http://localhost:3000/places")
-      .then((response) => response.json())
-      .then((resData) => setAvailablePlaces(resData.places)); */
     fetchPlaces();
   }, []);
+
+  if (error) {
+    return (
+      <ErrorMessage
+        title="An error occured!"
+        message={error.message}
+        onConfirm={() => {}}
+      />
+    );
+  }
 
   /*   useEffect(() => {
     fetch("http://localhost:3000/places")
